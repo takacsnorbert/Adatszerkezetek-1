@@ -1,5 +1,5 @@
 # Adatszerkezetek-1
-#MAIN.c
+///MAIN.c
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -196,3 +196,474 @@ int main()
 
     return 0;
 }
+
+
+
+
+
+///header.h
+
+#ifndef EGERSAJT_H_INCLUDED
+#define EGERSAJT_H_INCLUDED
+
+#include <stdio.h>
+
+typedef struct egersajt{
+
+    int n, m, lepesek,sajtok;
+    int Ex, Ey;
+    int *Sx, *Sy;
+    int** a;
+
+}egersajt;
+
+egersajt* Create();
+egersajt* Beolvas(egersajt*,char*);
+void Rajzol(egersajt*, int *);
+void RajzolNehez(egersajt*, int *);
+
+
+#endif // EGERSAJT_H_INCLUDED
+
+
+
+///source.c
+
+#include "egersajt.h"
+
+egersajt* Create(){
+
+    egersajt* tmp = (egersajt*)calloc(1,sizeof(egersajt));
+    return tmp;
+
+}
+
+egersajt* Beolvas(egersajt* ES , char* be){
+
+
+    FILE* fin = fopen(be , "rt" );
+    if(!fin)
+        printf("Hiba a beolvasasnal");
+///
+
+    fscanf(fin ,"%d %d %d %d" , &ES->n , &ES->m , &ES->lepesek, &ES->sajtok);
+    //printf("%d %d",ES->n , ES->m );
+    ES->a = (int**)calloc(ES->n,sizeof(int*));
+    ES->Sx = (int*)calloc(ES->sajtok,sizeof(int));
+    ES->Sy = (int*)calloc(ES->sajtok,sizeof(int));
+
+    for (int i=0 ; i<ES->n ; ++i)
+        ES->a[i] = (int*) calloc (ES->m , sizeof(int));
+
+    for(int i=0 ; i<ES->n ; ++i){
+        for(int j=0 ; j<ES->m ; ++j)
+            fscanf(fin , "%d" , &ES->a[i][j]);
+    }
+///
+
+    fscanf(fin , "%d %d" , &ES->Ex, &ES->Ey);
+
+    for(int i = 0 ; i < ES->sajtok ; i++)
+        fscanf(fin , "%d %d" , &ES->Sx[i], &ES->Sy[i]);
+
+    fclose(fin);
+    return ES;
+}
+
+
+void RajzolNehez(egersajt* es, int* d){
+    char h, b = '-';
+    int tmpEx = es->Ex, tmpEy = es->Ey, bol;
+    int tmp = es->lepesek;
+    for(int i=es->Ex-5 ; i<=es->Ex+5 ; i++){
+        for(int j=es->Ey-5 ; j<=es->Ey+5 ; j++){
+            if(i < es->n && j < es->m && i >= 0 && j >= 0){
+               if((es->Ex-1) == i && (es->Ey-1) == j && es->a[es->Ex-1][es->Ey-1]!=1){
+                    printf("E ");
+                    continue;
+                    }
+///
+               for(int k=0 ; k < es->sajtok ; k++){
+               if((es->Sx[k]-1) == i && (es->Sy[k]-1) == j){
+                    printf("S ");
+                    bol=1;
+               }
+               }
+               if(bol){
+                    bol=0;
+                    continue;
+               }
+               if(es->a[i][j] == 1){
+                    //printf("%d  " , es->a[i][j]);
+
+                    if(i == 0 || i == es->n-1) printf("--");
+                    else{
+                        if(j == 0 || j == es->m-1) printf("| ");
+                        else printf("+ ");
+                    }
+
+                    }
+                if(es->a[i][j] != 1 && es->a[i][j] != 'S'){printf("  ");}
+
+        }
+        }
+        printf("\n");
+
+    }
+
+    printf("\n\n     Lepesek szama:%d" , --tmp);
+
+    int sum=0;
+    int *tmpSx = es->Sx, *tmpSy = es->Sy;
+
+    for(int k=0 ; ; k++){
+        for(int l=0 ; l<es->sajtok ; l++)
+            if(es->Ex == tmpSx[l] && es->Ey == tmpSy[l]){
+                sum++;  ///printf("\nAz eger jol lakott!"); *d = 1; return;}
+                tmpSx[l] = -1; tmpSy[l] = -1;
+                ///es->a[tmpSx[l]][tmpSy[l]] = "  ";
+            }
+    if(sum == es->sajtok){
+        printf("\nAz eger jol lakott!");
+        *d = 1;
+        return;
+    }
+
+        h = getch();
+        system("cls");
+        switch(h){
+        case 'w' : es->Ex-- ; break;
+        case 's' : es->Ex++ ; break;
+        case 'a' : es->Ey-- ; break;
+        case 'd' : es->Ey++ ; break;
+        }
+    if(es->a[es->Ex-1][es->Ey-1]!=1){
+     for(int i=es->Ex-5 ; i<=es->Ex+5 ; i++){
+        for(int j=es->Ey-5 ; j<=es->Ey+5 ; j++){
+            if(i < es->n && j < es->m && i >= 0 && j >= 0){
+               if((es->Ex-1) == i && (es->Ey-1) == j && es->a[es->Ex-1][es->Ey-1]!=1){
+                    printf("E ");
+                    continue;
+                    }
+               for(int k=0 ; k < es->sajtok ; k++){
+               if((tmpSx[k]-1) == i && (tmpSy[k]-1) == j){
+                printf("S ");
+                    bol=1;
+               }
+               }
+               if(bol){
+                bol=0;
+                continue;
+               }
+               if(es->a[i][j] == 1){
+                    //printf("%d  " , es->a[i][j]);
+
+                    if(i == 0 || i == es->n-1) printf("--");
+                    else{
+                        if(j == 0 || j == es->m-1) printf("| ");
+                        else printf("+ ");
+                    }
+
+                    }
+                if(es->a[i][j] != 1 && es->a[i][j] != 'S'){printf("  ");}
+
+        }
+           }
+           printf("\n");
+        }
+        printf("\n\n     Lepesek szama:%d" , --tmp);
+
+        //es->lepesek--;
+        if(tmp == 0 && sum!=es->sajtok){     ///! (es->Ex == es->Sx && es->Ey == es->Sy)){
+
+            printf("\nLejart a lepesek szama!");
+            *d = 0;
+            return;
+        }
+
+      }
+      else{
+        switch(h){
+            case 'w' : es->Ex++ ; break;
+            case 's' : es->Ex-- ; break;
+            case 'a' : es->Ey++ ; break;
+            case 'd' : es->Ey-- ; break;
+      }
+      for(int i=es->Ex-5 ; i<=es->Ex+5 ; i++){
+        for(int j=es->Ey-5 ; j<=es->Ey+5 ; j++){
+            if(i < es->n && j < es->m && i >= 0 && j >= 0){
+               if((es->Ex-1) == i && (es->Ey-1) == j && es->a[es->Ex-1][es->Ey-1]!=1){
+                    printf("E ");
+                    continue;
+                    }
+               for(int k=0 ; k < es->sajtok ; k++){
+               if((tmpSx[k]-1) == i && (tmpSy[k]-1) == j){
+                printf("S ");
+                    bol=1;
+               }
+               }
+               if(bol){
+                bol=0;
+                continue;
+               }
+               if(es->a[i][j] == 1){
+                    //printf("%d  " , es->a[i][j]);
+
+                    if(i == 0 || i == es->n-1) printf("--");
+                    else{
+                        if(j == 0 || j == es->m-1) printf("| ");
+                        else printf("+ ");
+                    }
+
+                    }
+                if(es->a[i][j] != 1 && es->a[i][j] != 'S'){printf("  ");}
+
+        }
+           }
+        printf("\n");
+    }
+    printf("\n\n     Lepesek szama:%d" , tmp);
+    }
+    }
+system("cls");
+es->Ex = tmpEx;
+es->Ey = tmpEy;
+es->Sx = tmpSx;
+es->Sy = tmpSy;
+}
+
+
+void Rajzol(egersajt* es, int* d){
+    char h, b = '-';
+    int tmpEx = es->Ex, tmpEy = es->Ey,bol;
+    int tmp = es->lepesek;
+    for(int i=0 ; i<=es->n-1 ; i++){
+        for(int j=0 ; j<=es->m-1 ; j++){
+           if(i < es->n && j < es->m && i >= 0 && j >= 0){
+               if((es->Ex-1) == i && (es->Ey-1) == j && es->a[es->Ex-1][es->Ey-1]!=1){
+                    printf("E ");
+                    continue;
+                    }
+///
+               for(int k=0 ; k < es->sajtok ; k++){
+               if((es->Sx[k]-1) == i && (es->Sy[k]-1) == j){
+                    printf("S ");
+                    bol=1;
+               }
+               }
+               if(bol){
+                    bol=0;
+                    continue;
+               }
+               if(es->a[i][j] == 1){
+                    //printf("%d  " , es->a[i][j]);
+
+                    if(i == 0 || i == es->n-1) printf("--");
+                    else{
+                        if(j == 0 || j == es->m-1) printf("| ");
+                        else printf("+ ");
+                    }
+
+                    }
+                if(es->a[i][j] != 1 && es->a[i][j] != 'S'){printf("  ");}
+
+            }
+        }
+        printf("\n");
+
+    }
+
+    printf("\n\n     Lepesek szama:%d" , --tmp);
+
+    int *tmpSx = es->Sx, *tmpSy = es->Sy, sum = 0;
+
+    for(int k=0 ; ; k++){
+
+        for(int l=0 ; l<es->sajtok ; l++)
+            if(es->Ex == tmpSx[l] && es->Ey == tmpSy[l]){
+                sum++;  ///printf("\nAz eger jol lakott!"); *d = 1; return;}
+                tmpSx[l] = -1; tmpSy[l] = -1;
+                ///es->a[tmpSx[l]][tmpSy[l]] = "  ";
+            }
+
+        if(sum == es->sajtok){
+            printf("\nAz eger jol lakott!");
+            *d = 1;
+            return;
+        }
+
+        h = getch();
+        system("cls");
+        switch(h){
+        case 'w' : es->Ex-- ; break;
+        case 's' : es->Ex++ ; break;
+        case 'a' : es->Ey-- ; break;
+        case 'd' : es->Ey++ ; break;
+        }
+    if(es->a[es->Ex-1][es->Ey-1]!=1){
+     for(int i=0 ; i<=es->n-1 ; i++){
+        for(int j=0 ; j<=es->m-1 ; j++){
+           if((es->Ex-1) == i && (es->Ey-1) == j && es->a[es->Ex-1][es->Ey-1]!=1){
+                printf("E ");
+                continue;
+           }
+           for(int k=0 ; k < es->sajtok ; k++){
+               if((tmpSx[k]-1) == i && (tmpSy[k]-1) == j){
+                printf("S ");
+                    bol=1;
+               }
+               }
+
+            if(bol){
+                bol = 0;
+                continue;
+            }
+
+           if(es->a[i][j] == 1){
+                ///printf("%d  " , es->a[i][j]);
+
+                if(i == 0 || i == es->n-1) printf("--");
+                    else{
+                        if(j == 0 || j == es->m-1) printf("| ");
+                        else printf("+ ");
+                    }
+
+                }
+
+            else {printf("  ");}
+           }
+           printf("\n");
+        }
+        printf("\n\n     Lepesek szama:%d" , --tmp);
+
+        //es->lepesek--;
+        if(tmp == 0 &! (es->Ex == es->Sx && es->Ey == es->Sy)){
+
+            printf("\nLejart a lepesek szama!");
+            *d = 0;
+            return 0;
+        }
+
+      }
+      else{
+        switch(h){
+            case 'w' : es->Ex++ ; break;
+            case 's' : es->Ex-- ; break;
+            case 'a' : es->Ey++ ; break;
+            case 'd' : es->Ey-- ; break;
+      }
+      for(int i=0 ; i<=es->n-1 ; i++){
+        for(int j=0 ; j<=es->m-1 ; j++){
+           if(i < es->n && j < es->m && i >= 0 && j >= 0){
+               if((es->Ex-1) == i && (es->Ey-1) == j && es->a[es->Ex-1][es->Ey-1]!=1){
+                    printf("E ");
+                    continue;
+                    }
+               for(int k=0 ; k < es->sajtok ; k++){
+               if((tmpSx[k]-1) == i && (tmpSy[k]-1) == j){
+                printf("S ");
+                    bol=1;
+               }
+               }
+               if(bol){
+                bol=0;
+                continue;
+               }
+               if(es->a[i][j] == 1){
+                    //printf("%d  " , es->a[i][j]);
+
+                    if(i == 0 || i == es->n-1) printf("--");
+                    else{
+                        if(j == 0 || j == es->m-1) printf("| ");
+                        else printf("+ ");
+                    }
+
+                    }
+                if(es->a[i][j] != 1 && es->a[i][j] != 'S'){printf("  ");}
+
+        }
+           }
+        printf("\n");
+    }
+    printf("\n\n     Lepesek szama:%d" , tmp);
+    }
+    }
+system("cls");
+es->Ex = tmpEx;
+es->Ey = tmpEy;
+es->Sx = tmpSx;
+es->Sy = tmpSy;
+}
+
+/*void Rajzol(egersajt* es){
+    char h, b = '-';
+    for(int i=1 ; i<es->n-1 ; i++){
+        for(int j=1 ; j<es->m-1 ; j++){
+           if((es->Ex-1) == i && (es->Ey-1) == j && es->a[es->Ex-1][es->Ey-1]!=1){
+                printf("E  ");
+                continue;
+                }
+           if((es->Sx-1) == i && (es->Sy-1) == j){
+            printf("S  ");
+                continue;
+           }
+           if(es->a[i][j] == 1){printf("%d  " , es->a[i][j]);}
+            else {printf("   ");}
+           }printf("\n");
+    }
+
+    for(int k=0 ; ; k++){
+
+            if(es->Ex == es->Sx && es->Ey == es->Sy){printf("Az eger jol lakott!"); break;}
+
+        h = getch();
+        system("cls");
+        switch(h){
+        case 'w' : es->Ex-- ; break;
+        case 's' : es->Ex++ ; break;
+        case 'a' : es->Ey-- ; break;
+        case 'd' : es->Ey++ ; break;
+        }
+    if(es->a[es->Ex-1][es->Ey-1]!=1){
+     for(int i=1 ; i<es->n-1 ; i++){
+        for(int j=1 ; j<es->m-1 ; j++){
+           if((es->Ex-1) == i && (es->Ey-1) == j && es->a[es->Ex-1][es->Ey-1]!=1){
+                printf("E  ");
+                continue;
+           }
+           if((es->Sx-1) == i && (es->Sy-1) == j){
+            printf("S  ");
+                continue;
+           }
+           if(es->a[i][j] == 1){printf("%d  " , es->a[i][j]);}
+            else {printf("   ");}
+           }printf("\n");
+        }
+        for(int v=0 ; v < 120 ; v++){printf("%c" , b);}
+        printf("\n\n");
+      }
+      else{switch(h){
+        case 'w' : es->Ex++ ; break;
+        case 's' : es->Ex-- ; break;
+        case 'a' : es->Ey++ ; break;
+        case 'd' : es->Ey-- ; break;
+      }
+      for(int i=1 ; i<es->n-1 ; i++){
+        for(int j=1 ; j<es->m-1 ; j++){
+           if((es->Ex-1) == i && (es->Ey-1) == j && es->a[es->Ex-1][es->Ey-1]!=1){
+                printf("E  ");
+                continue;
+                }
+           if((es->Sx-1) == i && (es->Sy-1) == j){
+            printf("S  ");
+                continue;
+           }
+           if(es->a[i][j] == 1){printf("%d  " , es->a[i][j]);}
+            else {printf("   ");}
+           }printf("\n");
+    }
+    }
+    }
+
+}*/
+
