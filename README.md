@@ -93,12 +93,12 @@ int main()
                 break;
             case 1:
                 Rajzol(E1,&b);
-                E1 = Beolvas(E1,"be3.txt");
+                E1 = Beolvas(E1,"be.txt");
                 break;
 
             case 2:
                 Rajzol(E2,&b);
-                E2 = Beolvas(E2,"be3.txt");
+                E2 = Beolvas(E2,"be2.txt");
                 break;
 
             case 3:
@@ -197,6 +197,7 @@ int main()
     return 0;
 }
 
+
 ///header.h
 
 #ifndef EGERSAJT_H_INCLUDED
@@ -222,11 +223,13 @@ void RajzolNehez(egersajt*, int *);
 #endif // EGERSAJT_H_INCLUDED
 
 
-
 ///source.c
 
 
 #include "egersajt.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 egersajt* Create(){
 
@@ -258,10 +261,30 @@ egersajt* Beolvas(egersajt* ES , char* be){
     }
 ///
 
-    fscanf(fin , "%d %d" , &ES->Ex, &ES->Ey);
+    srand(time(NULL));
+    int Xszam, Yszam;
+    for(int i = 0 ; i < ES->sajtok ; i++){
+        while(1){
+            Xszam = (rand() % ES->n-1)+1;
+            Yszam = (rand() % ES->m-1)+1;
+            if(ES->a[Xszam][Yszam] != 1){
+                ES->Sx[i] = Xszam+1;
+                ES->Sy[i] = Yszam+1;
+                break;
+            }
+        }
+    }
 
-    for(int i = 0 ; i < ES->sajtok ; i++)
-        fscanf(fin , "%d %d" , &ES->Sx[i], &ES->Sy[i]);
+    while(1){
+        Xszam = (rand() % ES->n-1) + 1;
+        Yszam = (rand() % ES->m-1) + 1;
+        if(ES->a[Xszam][Yszam] != 1 && ES->a[Xszam][Yszam] != 'S'){
+            ES->Ex = Xszam+1;
+            ES->Ey = Yszam+1;
+            break;
+        }
+
+    }
 
     fclose(fin);
     return ES;
@@ -271,7 +294,7 @@ egersajt* Beolvas(egersajt* ES , char* be){
 void RajzolNehez(egersajt* es, int* d){
     char h, b = '-';
     int tmpEx = es->Ex, tmpEy = es->Ey, bol;
-    int tmp = es->lepesek;
+    int tmp = es->lepesek, tmps = es->sajtok;
     for(int i=es->Ex-5 ; i<=es->Ex+5 ; i++){
         for(int j=es->Ey-5 ; j<=es->Ey+5 ; j++){
             if(i < es->n && j < es->m && i >= 0 && j >= 0){
@@ -308,7 +331,7 @@ void RajzolNehez(egersajt* es, int* d){
 
     }
 
-    printf("\n\n     Lepesek szama:%d" , --tmp);
+    printf("\n\n     Lepesek szama:%d\n     Sajtok: %d" , --tmp, tmps);
 
     int sum=0;
     int *tmpSx = es->Sx, *tmpSy = es->Sy;
@@ -319,6 +342,7 @@ void RajzolNehez(egersajt* es, int* d){
                 sum++;  ///printf("\nAz eger jol lakott!"); *d = 1; return;}
                 tmpSx[l] = -1; tmpSy[l] = -1;
                 ///es->a[tmpSx[l]][tmpSy[l]] = "  ";
+                tmps--;
             }
     if(sum == es->sajtok){
         printf("\nAz eger jol lakott!");
@@ -368,7 +392,7 @@ void RajzolNehez(egersajt* es, int* d){
            }
            printf("\n");
         }
-        printf("\n\n     Lepesek szama:%d" , --tmp);
+        printf("\n\n     Lepesek szama:%d/n     Sajtok: %d" , --tmp, tmps);
 
         //es->lepesek--;
         if(tmp == 0 && sum!=es->sajtok){     ///! (es->Ex == es->Sx && es->Ey == es->Sy)){
@@ -388,7 +412,7 @@ void RajzolNehez(egersajt* es, int* d){
       }
       for(int i=es->Ex-5 ; i<=es->Ex+5 ; i++){
         for(int j=es->Ey-5 ; j<=es->Ey+5 ; j++){
-            if(i < es->n && j < es->m && i >= 0 && j >= 0){
+            if(i < es->n && j < es->m && i > 0 && j > 0){
                if((es->Ex-1) == i && (es->Ey-1) == j && es->a[es->Ex-1][es->Ey-1]!=1){
                     printf("E ");
                     continue;
@@ -419,7 +443,7 @@ void RajzolNehez(egersajt* es, int* d){
            }
         printf("\n");
     }
-    printf("\n\n     Lepesek szama:%d" , tmp);
+    printf("\n\n     Lepesek szama:%d\n     Sajtok: %d" , tmp, tmps);
     }
     }
 system("cls");
@@ -433,7 +457,7 @@ es->Sy = tmpSy;
 void Rajzol(egersajt* es, int* d){
     char h, b = '-';
     int tmpEx = es->Ex, tmpEy = es->Ey,bol;
-    int tmp = es->lepesek;
+    int tmp = es->lepesek, tmps = es->sajtok;
     for(int i=0 ; i<=es->n-1 ; i++){
         for(int j=0 ; j<=es->m-1 ; j++){
            if(i < es->n && j < es->m && i >= 0 && j >= 0){
@@ -470,7 +494,7 @@ void Rajzol(egersajt* es, int* d){
 
     }
 
-    printf("\n\n     Lepesek szama:%d" , --tmp);
+    printf("\n\n     Lepesek szama:%d\n     Sajtok: %d" , --tmp, tmps);
 
     int *tmpSx = es->Sx, *tmpSy = es->Sy, sum = 0;
 
@@ -481,6 +505,7 @@ void Rajzol(egersajt* es, int* d){
                 sum++;  ///printf("\nAz eger jol lakott!"); *d = 1; return;}
                 tmpSx[l] = -1; tmpSy[l] = -1;
                 ///es->a[tmpSx[l]][tmpSy[l]] = "  ";
+                tmps--;
             }
 
         if(sum == es->sajtok){
@@ -531,7 +556,7 @@ void Rajzol(egersajt* es, int* d){
            }
            printf("\n");
         }
-        printf("\n\n     Lepesek szama:%d" , --tmp);
+        printf("\n\n     Lepesek szama:%d\n     Sajtok: %d" , --tmp, tmps);
 
         //es->lepesek--;
         if(tmp == 0 &! (es->Ex == es->Sx && es->Ey == es->Sy)){
@@ -582,7 +607,7 @@ void Rajzol(egersajt* es, int* d){
            }
         printf("\n");
     }
-    printf("\n\n     Lepesek szama:%d" , tmp);
+    printf("\n\n     Lepesek szama:%d\n     Sajtok: %d" , tmp, tmps);
     }
     }
 system("cls");
